@@ -1,7 +1,9 @@
 const express = require('express');
 const { graphqlHTTP } = require('express-graphql'); 
 const { buildSchema } = require('graphql');
- 
+const cors = require("cors");
+const morgan = require("morgan");
+require("./database");
 // Construimos el schema
 var schema = buildSchema(`
  
@@ -52,5 +54,14 @@ app.use('/graphql', graphqlHTTP({
   rootValue: root,
   graphiql: true,
 }));
-app.listen(4100);
-console.log('GraphQL API en http://localhost:4100/graphql');
+app.set("port", process.env.PORT || 3000);
+
+// Middlewares
+// const corsOptions = {origin: "http://localhost:4200"}
+app.use(cors());
+app.use(morgan("dev"));
+app.use(express.json());
+// starting the server
+app.listen(app.get("port"), () => {
+  console.log(`server on port ${app.get("port")}`);
+});
